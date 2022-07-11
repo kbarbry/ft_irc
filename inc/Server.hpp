@@ -30,6 +30,7 @@ public:
 	void operator=(const Server &);
 
 private:
+
 	Server();
 
 public:
@@ -50,6 +51,14 @@ public:
 	void	run_cmd(const std::string &txt, User &runner);
 	void	start(void);
 	void	send_msg_to_all(const std::string &msg);
+
+	// Getters
+	User				&getUser(int socket_fd);
+	User				&getUser(const std::string &id);
+	const std::string	&getOperator(const std::string &op_name);
+	Channel				&getChannel(const std::string &id);
+	const std::string	&getPassword(void);
+	bool				isOnline(const std::string &id);
 
 	// Setters
 	void	addUser(int socket_fd);

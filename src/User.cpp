@@ -30,25 +30,6 @@ bool User::operator!=(const User &rhs) const {
 	return !(rhs == *this);
 }
 
-const std::string	&User::getId(void)				const	{ return _id; }
-const std::string	&User::getNickname(void)		const	{ return _nickname; }
-const std::string	&User::getRealName(void)		const	{ return _real_name; }
-bool				User::isOnline(void)			const	{ return _is_online; }
-long				User::getLastConnexion(void)	const	{ return _last_connexion; }
-
-User	&User::setId(const std::string &newId)				{ _id = newId; return *this; }
-User	&User::setNickname(const std::string &newNickname)	{ _nickname = newNickname; return *this; }
-User	&User::setRealName(const std::string &newRealName)	{ _real_name = newRealName; return *this; }
-User	&User::setOnline(bool is_online)					{ _is_online = is_online; return *this; }
-User	&User::setLastConnexion(long lastConnexion)			{ _last_connexion = lastConnexion; return *this; }
-User	&User::setSocketFd(int socketFd)					{ _socket_fd = socketFd; return *this; }
-User	&User::setIsOperator(bool isOperator)				{	_is_operator = isOperator; return *this; }
-User	&User::setIsAuth(bool isAuth)						{	_is_auth = isAuth; return *this; }
-
-int		User::getSocketFd(void)						const	{ return _socket_fd; }
-bool	User::isAuth()								const	{ return _is_auth; }
-bool	User::isOperator()							const	{ return _is_operator; }
-
 void User::send_msg(const std::string &msg) {
 	std::string real_message = ":localhost " + msg;
 
