@@ -8,16 +8,19 @@ class User
 {
 public:
 	std::string 	command;
-	bool			should_disconnect;
-	std::string		_nickname;
-	std::string		_username;
-	std::string		_real_name;
+	std::string 	response;
+	std::string		nickname;
+	std::string		username;
+	std::string		real_name;
 
-	int				_socket_fd;
-	bool			_is_auth;
-	bool			_is_online;
-	bool			_is_operator;
-	long			_last_connexion;
+	int				socket_fd;
+
+	bool			should_disconnect;
+	bool			is_auth;
+	bool			is_online;
+	bool			is_operator;
+	bool			pong_received;
+	long int		last_ping = std::time(NULL);
 
 public:
 	User(int socket_fd);
@@ -27,9 +30,9 @@ public:
 	bool	operator==(const User &rhs)			const;
 	bool	operator!=(const User &rhs)			const;
 
+	void	broadcast_channel(const std::string &msg);
 	void	send_srv_msg(const std::string &code, const std::string &msg);
 	void	send_msg(const std::string &msg);
 	void	send_raw(const std::string &msg);
-
-
+	void	disconnect(const std::string &reason);
 };

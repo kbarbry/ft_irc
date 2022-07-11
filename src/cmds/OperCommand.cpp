@@ -7,7 +7,7 @@
 // RPL_YOUREOPER		381
 
 void OperCommand::run(User &user, std::vector<std::string> &args) {
-	if (!user.isOnline()) {
+	if (!user.is_online) {
 		user.send_srv_msg("451", ":You are not authenticated");
 		return;
 	}
@@ -25,6 +25,6 @@ void OperCommand::run(User &user, std::vector<std::string> &args) {
 		user.send_srv_msg("464", ":No admin account matching this name");
 		return ;
 	}
-	user.setIsOperator(true);
+	user.is_operator = true;
 	user.send_srv_msg("381", ":You are now an operator");
 }

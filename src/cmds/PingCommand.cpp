@@ -1,7 +1,7 @@
 #include "Commands.hpp"
 
 void PingCommand::run(User &user, std::vector<std::string> &args) {
-	if (!user.isOnline()) {
+	if (!user.is_online) {
 		user.send_srv_msg("451", ":You are not authenticated");
 		return;
 	}

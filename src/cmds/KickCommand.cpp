@@ -8,7 +8,7 @@
 // ERR_NOTONCHANNEL		442
 
 void KickCommand::run(User &user, std::vector<std::string> &args) {
-	if (!user.isOnline()) {
+	if (!user.is_online) {
 		user.send_srv_msg("451", ":You are not authenticated");
 		return;
 	}
@@ -19,11 +19,11 @@ void KickCommand::run(User &user, std::vector<std::string> &args) {
 	try {
 		Channel &chan = Server::getInstance().getChannel(args[1]);
 
-		if (!chan.isMember(user.getId())) {
+		if (!chan.isMember(user.nickname)) {
 			user.send_srv_msg("442", ":You have to be part of the channel to kick someone from it");
 			return;
 		}
-		if (!chan.isOperator(user.getId()) && !user.isOperator()) {
+		if (!chan.isOperator(user.nickname) && !user.is_operator) {
 			user.send_srv_msg("482", ":Operator priviledge needed");
 			return;
 		}
@@ -41,7 +41,7 @@ void KickCommand::run(User &user, std::vector<std::string> &args) {
 		}
 		else
 			reason = "No reason specified";
-		user.send_raw(args[2] + " have been kicked for " + reason + " by " + user.getId());
+		user.send_raw(args[2] + " have been kicked for " + reason + " by " + user.nickname);
 	}
 	catch(const Server::ChannelNotFound &) {
 		user.send_srv_msg("403", ":No such channel");

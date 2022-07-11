@@ -6,7 +6,7 @@
 // ERR_PASSWDMISMATCH		464
 
 void PassCommand::run(User &user, std::vector<std::string> &args) {
-	if (user.isAuth()) {
+	if (user.is_auth) {
 		user.send_srv_msg("462", ":You are already authenticated");
 		return;
 	}
@@ -14,9 +14,9 @@ void PassCommand::run(User &user, std::vector<std::string> &args) {
 		user.send_srv_msg("461", ":Invalid argument count");
 		return;
 	}
-	if (Server::getInstance().getPassword() != args[1]) {
+	if (Server::getInstance().password != args[1]) {
 		user.send_srv_msg("464", ":Wrong password");
 		return;
 	}
-	user.setIsAuth(true);
+	user.is_auth = true;
 }

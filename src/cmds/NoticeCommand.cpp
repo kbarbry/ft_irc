@@ -2,16 +2,7 @@
 #include "Server.hpp"
 
 void NoticeCommand::run(User &user, std::vector<std::string> &args) {
-	if (args.size() == 1) {
-		user.send_srv_msg("411", ":No target to send the message");
-		return;
-	}
-	if (args.size() == 2) {
-		user.send_srv_msg("412", ":No message to send");
-		return;
-	}
-	if (!user.isOnline()) {
-		user.send_srv_msg("451", ":You are not authenticated");
+	if (args.size() == 1 || args.size() == 2 || !user.is_online) {
 		return;
 	}
 	std::vector<std::string> v;
@@ -39,33 +30,27 @@ void NoticeCommand::run(User &user, std::vector<std::string> &args) {
 			try {
 				Channel &chan = Server::getInstance().getChannel(chan_name);
 
-				if (!chan.isMember(user.getId())) {
-					user.send_srv_msg("404", ":You're not in this channel");
+				if (!chan.isMember(user.nickname)) {
 					return;
 				}
-				Channel::id_vector lst = chan.getMembers();
+				Channel::id_vector lst = chan.members;
 				for (std::vector<std::string>::iterator ite = lst.begin(); ite != lst.end(); ++ite) {
 					try {
-						User &target = Server::getInstance().getUser(*ite);
+						User &target = Server::getInstance().getUserByUsername(*ite);
 
-						if (target.getId() == user.getId())
+						if (target.nickname == user.nickname)
 							continue;
 
-						target.send_raw(":" + user.getId() + " NOTICE " + chan.getId() + " " + msg);
+						target.send_raw(":" + user.nickname + " NOTICE " + chan.name + " " + msg);
 					} catch (Server::UserNotFound &) {}
 				}
-			} catch (Server::ChannelNotFound &) {
-				user.send_srv_msg("402", ":No such channel");
-				return;
-			}
+			} catch (Server::ChannelNotFound &) {}
 		} else {
 			try {
-				User &target = Server::getInstance().getUser(chan_name);
+				User &target = Server::getInstance().getUserByNickname(chan_name);
 
-				target.send_raw(":" + user.getId() + " NOTICE " + target.getId() + " " + msg);
-			} catch (Server::UserNotFound &) {
-				user.send_srv_msg("301", ":User is offline or does not exist");
-			}
+				target.send_raw(":" + user.nickname + " NOTICE " + target.nickname + " " + msg);
+			} catch (Server::UserNotFound &) {}
 		}
 
 	}

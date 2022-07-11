@@ -13,7 +13,5 @@ void QuitCommand::run(User &user, std::vector<std::string> &args) {
 				reason += " ";
 		}
 	}
-
-	Server::getInstance().send_msg_to_all(user.getNickname() + " QUIT :Quit: " + reason);
-	user.should_disconnect = true;
+	user.disconnect(reason);
 }

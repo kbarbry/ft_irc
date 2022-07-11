@@ -4,7 +4,7 @@
 // ERR_ALREADYREGISTRED	462
 
 void UserCommand::run(User &user, std::vector<std::string> &args) {
-	if (!user.isAuth()) {
+	if (!user.is_auth) {
 		user.send_srv_msg("461", ":You are not authenticated");
 		return ;
 	}
@@ -12,8 +12,8 @@ void UserCommand::run(User &user, std::vector<std::string> &args) {
 		user.send_srv_msg("461", ":Arguments are invalid");
 		return ;
 	}
-	if (user.isOnline() || Server::getInstance().isOnline(args[1])) {
-		user.send_srv_msg("462", ":User is already connected");
+	if (user.is_online) {
+		user.send_srv_msg("462", ":You are already connected");
 		return ;
 	}
 	if (args.size() > 5 && args[4][0] != ':') {
@@ -40,46 +40,44 @@ void UserCommand::run(User &user, std::vector<std::string> &args) {
 		realname.append(*it).append(" ");
 	realname.pop_back();
 
-	int fd = user.getSocketFd();
+	int fd = user.socket_fd;
 
-	user.setSocketFd(fd);
-	try {
-		Server	&serv = Server::getInstance();
-
-		for (Server::user_map::iterator it; it != serv._users.end(); it++) {
-			if ()
+	user.socket_fd = fd;
+	Server	&serv = Server::getInstance();
+	if (user.nickname == "") {
+		for (Server::user_map::iterator it = serv.users.begin(); it != serv.users.end(); it++) {
+			if (it->second.nickname == args[1]) {
+				user.send_srv_msg("461", ":Nickname is already in use. Hint: Change nick with the NICK command");
+				return;
+			}
 		}
-	} catch(const std::exception& e) {
-		std::cerr << e.what() << '\n';
+		user.nickname = args[1];
 	}
-	
-	if (user.getNickname() == "")
-		user.setNickname(args[1]);
-	user.setRealName(realname);
-	user.setOnline(true);
-	user.send_srv_msg("001 " + user.getId(), ":Welcome to our IRC server!");
+	user.username = args[1];
+	user.real_name = realname;
+	user.is_online = true;
+	user.send_srv_msg("001 " + user.nickname, ":Welcome to our IRC server!");
 
 	try {
-		Server::getInstance().getChannel("#general");
+		serv.getChannel("#general");
 	} catch (Server::ChannelNotFound &) {
-		Server::getInstance().addChannel("#general");
-		Server::getInstance().getChannel("#general").setTopic("Default channel for talking");
+		serv.addChannel("#general");
+		serv.getChannel("#general").topic = "Default channel for talking";
 	}
-	Channel &chan = Server::getInstance().getChannel("#general");
-	if (chan.isPrivate())
+	Channel &chan = serv.getChannel("#general");
+	if (chan.is_private)
 		return;
-	if (!chan.isMember(user.getId()))
-		chan.addMember(user.getId());
-
-	user.send_raw(":" + user.getId() + " JOIN " + chan.getId());
-	user.send_msg(chan.getId() + ": " + chan.getTopic());
+	if (!chan.isMember(user.nickname))
+		chan.members.push_back(user.username);
 
 	std::string	lst_str = ":";
-	Channel::id_vector lst = chan.getMembers();
+	Channel::id_vector lst = chan.members;
 	for (std::vector<std::string>::iterator ite = lst.begin(); ite != lst.end(); ++ite) {
 		lst_str += *ite;
 		if (ite != lst.end() - 1)
 			lst_str += " ";
 	}
-	user.send_srv_msg("JOIN 353", lst_str);
+	user.send_raw(":" + user.nickname + " JOIN " + chan.name);
+	chan.send_msg_srv("353 " + user.nickname + " = " + chan.name + " :" + lst_str);
+	chan.send_msg_srv("366 " + user.nickname + " " + chan.name + " :End of /NAMES list.");
 }

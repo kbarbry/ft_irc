@@ -32,7 +32,7 @@ print_header:
 	echo "$(BBLU)\033[35G ██         ██              ██ ██   ██ ██      "
 	echo "$(BBLU)\033[35G ██         ██    ███████   ██ ██   ██  ██████ "
 	echo "$(BBLU)\033[5G"
-	echo "$(BBLU)\033[5G=======================================> By kbarbry ft tjolivea <======================================="
+	echo "$(BBLU)\033[5G==================================> By kbarbry ft tjolivea ft mmosca <=================================="
 .PHONY: print_header
 
 ./obj/%.o: ./src/%.cpp $(HEADER)
@@ -61,7 +61,8 @@ fclean: clean
 	echo "$(RED)[FCLEAN] :$(RST) Deleting executable...$(BGREEN)\033[47G[✔]$(RST)"
 .PHONY: fclean
 
-re:	fclean all
+re:	fclean
+	$(MAKE) all
 .PHONY: re
 
 .SILENT:

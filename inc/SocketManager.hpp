@@ -19,9 +19,9 @@ class SocketManager
 private:
 	SocketManager();
 
-	struct sockaddr_in	_addr;
-	uint16_t			_port;
-	int 				_fd;
+	struct sockaddr_in	addr;
+	uint16_t			port;
+	int 				fd;
 
 public:
 	// Singleton

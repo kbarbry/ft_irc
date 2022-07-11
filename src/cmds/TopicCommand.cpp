@@ -10,7 +10,7 @@
 // RPL_TOPICWHOTIME		333
 
 void TopicCommand::run(User &user, std::vector<std::string> &args) {
-	if (!user.isOnline()) {
+	if (!user.is_online) {
 		user.send_srv_msg("451", ":You are not authenticated");
 		return;
 	}
@@ -22,14 +22,14 @@ void TopicCommand::run(User &user, std::vector<std::string> &args) {
 		try {
 			Channel &chan = Server::getInstance().getChannel(args[1]);
 
-			if (!chan.isMember(user.getId())) {
+			if (!chan.isMember(user.nickname)) {
 				user.send_srv_msg("442", ":You're not in this channel");
 				return;
 			}
-			if (chan.getTopic() == "")
+			if (chan.topic == "")
 				user.send_srv_msg("331", ":No topic set");
 			else
-				user.send_srv_msg("332", user.getId() + " " + chan.getId() + " :" + chan.getTopic());
+				user.send_srv_msg("332", user.nickname + " " + chan.name + " :" + chan.topic);
 		}
 		catch (Server::ChannelNotFound &) {
 			user.send_srv_msg("403", ":Channel not found");
@@ -46,17 +46,17 @@ void TopicCommand::run(User &user, std::vector<std::string> &args) {
 				if (it != args.end() - 1)
 					topic += " ";
 			}
-			if (!chan.isMember(user.getId())) {
+			if (!chan.isMember(user.nickname)) {
 				user.send_srv_msg("442", ":You're not in this channel");
 				return;
 			}
-			if (!chan.isOperator(user.getId()) && !user.isOperator()) {
+			if (!chan.isOperator(user.nickname) && !user.is_operator) {
 				user.send_srv_msg("482", ":Operator privilege needed");
 				return;
 			}
 			if (args[2][0] == ':')
 				topic.replace(0, 1, "");
-			chan.setTopic(topic);
+			chan.topic =  topic;
 		}
 		catch (Server::ChannelNotFound &) {
 			user.send_srv_msg("403", ":Channel not found");

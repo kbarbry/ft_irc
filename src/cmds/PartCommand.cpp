@@ -6,7 +6,7 @@
 // ERR_NOTONCHANNEL		442
 
 void PartCommand::run(User &user, std::vector<std::string> &args) {
-	if (!user.isOnline()) {
+	if (!user.is_online) {
 		user.send_srv_msg("451", ":You are not authenticated");
 		return;
 	}
@@ -29,20 +29,20 @@ void PartCommand::run(User &user, std::vector<std::string> &args) {
 		try {
 			Channel &chan = Server::getInstance().getChannel(*it);
 
-			if (!chan.isMember(user.getId())) {
+			if (!chan.isMember(user.nickname)) {
 				user.send_srv_msg("442", ":You have to be part of the channel to leave it");
 				return;
 			}
-			Channel::id_vector mbrs = chan.getMembers();
+			Channel::id_vector mbrs = chan.members;
 			for (Channel::id_vector::iterator ite = mbrs.begin(); ite != mbrs.end(); ++ite) {
 				try {
-					User target = Server::getInstance().getUser(*ite);
+					User target = Server::getInstance().getUserByUsername(*ite);
 
-					target.send_raw(":" + user.getId() + " PART " + chan.getId() + " :" + reason);
+					target.send_raw(":" + user.nickname + " PART " + chan.name + " :" + reason);
 				}
 				catch(const Server::UserNotFound &) { }
 			}
-			chan.removeMember(*it);
+			chan.removeMember(user.nickname);
 		} catch (Server::ChannelNotFound &) {
 			user.send_srv_msg("403", ":No such channel");
 			return ;

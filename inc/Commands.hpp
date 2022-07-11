@@ -18,6 +18,27 @@ public:
 };
 
 // Oper Commands
+class InviteCommand: public ICommand {
+public:
+	void	run(User &user, std::vector<std::string> &args);
+};
+
+class KickCommand: public ICommand {
+public:
+	void	run(User &user, std::vector<std::string> &args);
+};
+
+class TopicCommand: public ICommand {
+public:
+	void	run(User &user, std::vector<std::string> &args);
+};
+
+class ModeCommand: public ICommand {
+private:
+	static	std::string modes;
+public:
+	void	run(User &user, std::vector<std::string> &args);
+};
 
 // Basic Commands
 class NickCommand: public ICommand {
@@ -45,16 +66,6 @@ public:
 	void	run(User &user, std::vector<std::string> &args);
 };
 
-class InviteCommand: public ICommand {
-public:
-	void	run(User &user, std::vector<std::string> &args);
-};
-
-class KickCommand: public ICommand {
-public:
-	void	run(User &user, std::vector<std::string> &args);
-};
-
 class PrivmsgCommand: public ICommand {
 public:
 	void	run(User &user, std::vector<std::string> &args);
@@ -70,14 +81,7 @@ public:
 	void	run(User &user, std::vector<std::string> &args);
 };
 
-class TopicCommand: public ICommand {
-public:
-	void	run(User &user, std::vector<std::string> &args);
-};
-
-class ModeCommand: public ICommand {
-private:
-	static	std::string modes;
+class PongCommand: public ICommand {
 public:
 	void	run(User &user, std::vector<std::string> &args);
 };

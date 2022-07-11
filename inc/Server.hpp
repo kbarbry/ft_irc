@@ -2,6 +2,7 @@
 
 #include <exception>
 #include <stdint.h>
+#include <iterator>
 #include <map>
 #include "Channel.hpp"
 #include "Commands.hpp"
@@ -11,6 +12,11 @@
 
 class Server
 {
+private:
+	Server();
+	Server(const Server &);
+	void operator=(const Server &);
+
 public:
 	typedef	std::map<int, User>					user_map;
 	typedef std::map<std::string, std::string>	operator_map;
@@ -19,21 +25,13 @@ public:
 
 	static int		max_clients;
 
-	user_map			_users;
-	operator_map 		_operators;
-	channel_map			_channels;
-	command_map			_commands;
-	uint16_t 			_port;
-	std::string			_password;
+	user_map			users;
+	operator_map 		operators;
+	channel_map			channels;
+	command_map			commands;
+	uint16_t 			port;
+	std::string			password;
 
-	Server(const Server &);
-	void operator=(const Server &);
-
-private:
-
-	Server();
-
-public:
 	~Server(void);
 
 	// Singleton
@@ -50,14 +48,13 @@ public:
 	void	check_cmd(const std::string &txt, User &runner);
 	void	run_cmd(const std::string &txt, User &runner);
 	void	start(void);
-	void	send_msg_to_all(const std::string &msg);
 
 	// Getters
 	User				&getUser(int socket_fd);
-	User				&getUser(const std::string &id);
-	const std::string	&getOperator(const std::string &op_name);
+	User				&getUserByUsername(const std::string &username);
+	User				&getUserByNickname(const std::string &nickname);
 	Channel				&getChannel(const std::string &id);
-	const std::string	&getPassword(void);
+	const std::string	&getOperator(const std::string &op_name);
 	bool				isOnline(const std::string &id);
 
 	// Setters
