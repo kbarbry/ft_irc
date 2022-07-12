@@ -20,7 +20,7 @@ void ModeCommand::run(User &user, std::vector<std::string> &args) {
 				user.send_srv_msg("404", ":You're not in this channel");
 				return;
 			}
-			user.send_srv_msg("324 " + user.nickname + " " + chan.name, ":+" + (chan.is_private ? std::string("i") : std::string("")));
+			user.send_msg("324 " + user.nickname + " " + chan.name + " :" + (chan.is_private ? std::string("+i") : std::string("")));
 		} catch (Server::ChannelNotFound &)  {
 			user.send_srv_msg("402", ":No such channel");
 		}

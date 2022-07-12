@@ -23,6 +23,7 @@ void NickCommand::run(User &user, std::vector<std::string> &args) {
 			return ;
 		}
 	}
-	user.broadcast_channel(user.nickname + " NICK " + args[1]);
+	user.send_raw(":" + user.nickname + " NICK " + args[1]);
+	user.broadcast_channel(":" + user.nickname + " NICK " + args[1]);
 	user.nickname = args[1];
 }

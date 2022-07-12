@@ -1,5 +1,6 @@
 #include <sys/socket.h>
 #include "User.hpp"
+#include <iomanip>
 #include "Server.hpp"
 
 User::User(int socket_fd): command(""), response(""), nickname(""), username(), real_name(""), socket_fd(socket_fd), should_disconnect(false), is_auth(false), is_online(false), is_operator(false), pong_received(true), last_ping(std::time(NULL)) {}
@@ -33,14 +34,14 @@ void	User::broadcast_channel(const std::string &msg) {
 	Server	&serv = Server::getInstance();
 
 	for (Server::channel_map::iterator it = serv.channels.begin(); it != serv.channels.end(); it++) {
-		if (it->second.isMember(this->nickname) && username != this->username)
-			it->second.send_msg_srv(msg);
+		if (it->second.isMember(this->nickname))
+			it->second.send_raw(msg);
 	}
 }
 
 void User::send_msg(const std::string &msg) {
 	std::string real_message = ":localhost " + msg;
-	std::cout << "\033[0;31m<-- " << real_message << "\033[0;0m" << std::endl;
+	std::cout << "\033[0;32m-->\033[0;0m " << std::setfill(' ') << std::setw(9) << nickname << " \033[0;33m|\033[0;0m " << real_message << "" << std::endl;
 
 	real_message += "\r\n";
 	response += real_message;
@@ -48,7 +49,7 @@ void User::send_msg(const std::string &msg) {
 
 void User::send_srv_msg(const std::string &code, const std::string &msg) {
 	std::string real_message = ":localhost " + code + " " + nickname + " " + msg;
-	std::cout << "\033[0;31m<-- " << real_message << "\033[0;0m" << std::endl;
+	std::cout << "\033[0;32m-->\033[0;0m " << std::setfill(' ') << std::setw(9) << nickname << " \033[0;33m|\033[0;0m " << real_message << std::endl;
 
 	real_message += "\r\n";
 	response += real_message;
@@ -56,7 +57,7 @@ void User::send_srv_msg(const std::string &code, const std::string &msg) {
 
 void User::send_raw(const std::string &msg) {
 	std::string real_message = msg;
-	std::cout << "\033[0;31m<-- " << real_message << "\033[0;0m" << std::endl;
+	std::cout << "\033[0;32m-->\033[0;0m " << std::setfill(' ') << std::setw(9) << nickname << " \033[0;33m|\033[0;0m " << real_message << std::endl;
 
 	real_message += "\r\n";
 	response += real_message;
@@ -65,15 +66,15 @@ void User::send_raw(const std::string &msg) {
 void	User::disconnect(const std::string &reason) {
 	Server	&serv = Server::getInstance();
 
-	for (Server::user_map::iterator it = serv.users.begin(); it != serv.users.end(); it++) {
-		it->second.send_raw(":" + nickname + " QUIT :Quit: " + reason);
-	}
-
 	for (Server::channel_map::iterator it = serv.channels.begin(); it != serv.channels.end(); it++) {
 		it->second.removeMember(nickname);
 		it->second.removeOperator(nickname);
 		it->second.uninviteUser(nickname);
 		it->second.send_raw(":" + nickname + " PART " + it->second.name + " :" + reason);
+	}
+
+	for (Server::user_map::iterator it = serv.users.begin(); it != serv.users.end(); it++) {
+		it->second.send_raw(":" + nickname + " QUIT :" + reason);
 	}
 
 	should_disconnect = true;

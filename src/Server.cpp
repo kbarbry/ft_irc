@@ -108,8 +108,9 @@ void Server::check_cmd(const std::string &cmd, User &runner) {
 	while (std::getline(ss, line, '\n')) {
 		if (!line.empty())
 		{
-			std::cout << "\033[0;32m--> " << line << "\033[0;0m" << std::endl;
+			std::cout << "\033[0;31m<--\033[0;0m " << std::setfill(' ') << std::setw(9) << runner.nickname << " \033[15G\033[0;33m|\033[0;0m " << line << std::endl;
 			run_cmd(line, runner);
+			runner.last_ping = std::time(NULL);
 		}
 		runner.command.erase(0, line.length() + 1);
 	}

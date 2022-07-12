@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iomanip>
 #include <exception>
 #include <stdint.h>
 #include <iterator>

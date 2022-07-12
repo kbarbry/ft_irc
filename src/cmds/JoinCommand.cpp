@@ -42,10 +42,10 @@ void JoinCommand::run(User &user, std::vector<std::string> &args) {
 				if (chan.is_private)
 					chan.uninviteUser(user.nickname);
 
-				std::string	lst_str = ":";
+				std::string	lst_str = "";
 				Channel::id_vector lst = chan.members;
 				for (std::vector<std::string>::iterator ite = lst.begin(); ite != lst.end(); ++ite) {
-					lst_str += *ite;
+					lst_str += Server::getInstance().getUserByUsername(*ite).nickname;
 					if (ite != lst.end() - 1)
 						lst_str += " ";
 				}
@@ -66,10 +66,10 @@ void JoinCommand::run(User &user, std::vector<std::string> &args) {
 				Server::getInstance().addChannel(user, *it);
 				Channel &chan = Server::getInstance().getChannel(*it);
 
-				std::string	lst_str = ":";
+				std::string	lst_str = "";
 				Channel::id_vector lst = chan.members;
 				for (std::vector<std::string>::iterator ite = lst.begin(); ite != lst.end(); ++ite) {
-					lst_str += *ite;
+					lst_str += Server::getInstance().getUserByUsername(*ite).nickname;
 					if (ite != lst.end() - 1)
 						lst_str += " ";
 				}

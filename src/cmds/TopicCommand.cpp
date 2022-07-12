@@ -57,6 +57,7 @@ void TopicCommand::run(User &user, std::vector<std::string> &args) {
 			if (args[2][0] == ':')
 				topic.replace(0, 1, "");
 			chan.topic =  topic;
+			user.send_raw(":" + chan.name + " TOPIC " + topic);
 		}
 		catch (Server::ChannelNotFound &) {
 			user.send_srv_msg("403", ":Channel not found");

@@ -9,7 +9,7 @@ void	SocketManager::init(const uint16_t &port) {
 	this->fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd <= 0)
 		throw SocketFailure();
-	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &status, sizeof(int)))
+	if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &status, sizeof(int)))
 		throw SocketOptFailure();
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 		throw FcntlFailure();
@@ -27,7 +27,7 @@ void	SocketManager::init(const uint16_t &port) {
 
 void SocketManager::runtime(void) {
 	fd_set			input_fds, output_fds;
-	struct timeval	timeout{ 5, 0 };
+	struct timeval	timeout = { 1, 0 };
 	int				clients[Server::max_clients];
 	int				max_fd;
 	int				new_client;
@@ -82,6 +82,7 @@ void SocketManager::runtime(void) {
 					continue;
 				}
 				it->second.pong_received = false;
+				it->second.last_ping = std::time(NULL);
 				it->second.send_msg("PING localhost");
 			}
 		}
@@ -112,9 +113,24 @@ void SocketManager::runtime(void) {
 		{
 			int		client_fd = clients[i];
 			ssize_t	valread;
+			ssize_t	valsend;
+			ssize_t	to_send;
 			char	buffer[1025];
 
-			// Un des clients a dit un truc?
+			if (FD_ISSET(client_fd , &output_fds)) {
+				// ON PEUX ECRIRE DANS LE FD
+				try {
+					User &user = server.getUser(client_fd);
+					
+					if (!user.response.empty()) {
+						to_send = (ssize_t)std::min(user.response.length(), (size_t)512);
+						valsend = send(client_fd, user.response.c_str(), to_send, 0);
+						user.response.erase(0, std::min(valsend, to_send));
+					}
+				} catch (Server::UserNotFound &) {}
+			}
+
+			// Un des clients a de l'input
 			if (FD_ISSET(client_fd , &input_fds))
 			{
 				// On lis ce qu'il dit ce batard
@@ -134,7 +150,6 @@ void SocketManager::runtime(void) {
 				else
 				{
 					buffer[valread] = '\0';
-//					std::cout << i << ": " << buffer;
 					server.check_cmd(std::string().insert(0, buffer), server.getUser(client_fd));
 				}
 			}

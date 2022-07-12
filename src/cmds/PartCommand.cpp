@@ -36,7 +36,7 @@ void PartCommand::run(User &user, std::vector<std::string> &args) {
 			Channel::id_vector mbrs = chan.members;
 			for (Channel::id_vector::iterator ite = mbrs.begin(); ite != mbrs.end(); ++ite) {
 				try {
-					User target = Server::getInstance().getUserByUsername(*ite);
+					User &target = Server::getInstance().getUserByUsername(*ite);
 
 					target.send_raw(":" + user.nickname + " PART " + chan.name + " :" + reason);
 				}

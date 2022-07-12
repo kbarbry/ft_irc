@@ -20,7 +20,7 @@ public:
 	bool			is_online;
 	bool			is_operator;
 	bool			pong_received;
-	long int		last_ping = std::time(NULL);
+	long int		last_ping;
 
 public:
 	User(int socket_fd);
