@@ -19,10 +19,13 @@ void NickCommand::run(User &user, std::vector<std::string> &args) {
 	}
 	for (size_t i = 0; i < args[1].size() - 1; i++) {
 		if (!isalnum(args[1][i]) && args[1][i] != '_') {
-			user.send_srv_msg("432", ":Nickname can only contain alphanumeric and '_' characters.");
+			user.send_msg("432 " + user.nickname + " " + args[1] + " :Nickname can only contain alphanumeric and '_' characters.");
 			return ;
 		}
 	}
-	user.broadcast_channel(user.nickname + " NICK " + args[1]);
-	user.nickname = args[1];
+	if (user.is_online) {
+		user.send_raw(":" + user.nickname + " NICK " + args[1]);
+		user.broadcast_channel(":" + user.nickname + " NICK " + args[1]);
+		user.nickname = args[1];
+	}
 }

@@ -1,14 +1,20 @@
 #include "Server.hpp"
 
-int Server::max_clients = 50;
+const int Server::max_clients = 50;
 
 Server::Server(): port(0), password("") {}
 Server::~Server(void) {}
 
-void Server::configure(const uint16_t &port, const std::string &password) {
+void Server::configure(const std::string &port_str, const std::string &password) {
+	uint16_t port = atoi(port_str.c_str());
+
 	if (this->port && !this->password.empty())
 		throw AlreadyConfigured();
-	if (port < 1024 || port == std::numeric_limits<uint16_t>::max())
+	for (size_t i = 0; i < port_str.length(); ++i) {
+		if (!std::isdigit(port_str[i]))
+			throw InvalidPort();
+	}
+	if (port < 1024 || port > 40960 || port_str.length() > 5 || (port_str.length() == 5 && port_str > "65565"))
 		throw InvalidPort();
 	if (password.empty() || password.length() > 16 || password.length() < 4)
 		throw InvalidPassword();
@@ -108,8 +114,9 @@ void Server::check_cmd(const std::string &cmd, User &runner) {
 	while (std::getline(ss, line, '\n')) {
 		if (!line.empty())
 		{
-			std::cout << "\033[0;32m--> " << line << "\033[0;0m" << std::endl;
+			std::cout << "\033[0;31m<--\033[0;0m " << std::setfill(' ') << std::setw(9) << runner.nickname << " \033[15G\033[0;33m|\033[0;0m " << line << std::endl;
 			run_cmd(line, runner);
+			runner.last_ping = std::time(NULL);
 		}
 		runner.command.erase(0, line.length() + 1);
 	}

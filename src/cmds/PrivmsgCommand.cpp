@@ -15,16 +15,16 @@
 // RPL_AWAY				301
 
 void PrivmsgCommand::run(User &user, std::vector<std::string> &args) {
+	if (!user.is_online) {
+		user.send_srv_msg("451", ":You haven't registered");
+		return;
+	}
 	if (args.size() == 1) {
-		user.send_srv_msg("411", ":No target to send the message");
+		user.send_msg("401" + user.nickname + " " + user.nickname + " :No target to send the message");
 		return;
 	}
 	if (args.size() == 2) {
-		user.send_srv_msg("412", ":No message to send");
-		return;
-	}
-	if (!user.is_online) {
-		user.send_srv_msg("451", ":You are not authenticated");
+		user.send_msg("401" + user.nickname + " " + args[1] + " :No message to send");
 		return;
 	}
 	std::vector<std::string> v;
@@ -53,7 +53,7 @@ void PrivmsgCommand::run(User &user, std::vector<std::string> &args) {
 				Channel &chan = Server::getInstance().getChannel(chan_name);
 
 				if (!chan.isMember(user.nickname)) {
-					user.send_srv_msg("404", ":You're not in this channel");
+				user.send_msg("404 " + user.nickname + " " + args[1] + " :You are not in this channel");
 					return;
 				}
 				Channel::id_vector lst = chan.members;
@@ -68,7 +68,7 @@ void PrivmsgCommand::run(User &user, std::vector<std::string> &args) {
 					} catch (Server::UserNotFound &) {}
 				}
 			} catch (Server::ChannelNotFound &) {
-				user.send_srv_msg("402", ":No such channel");
+				user.send_msg("401" + user.nickname + " " + args[1] + " :No target to send the message");
 				return;
 			}
 		} else {
@@ -77,7 +77,7 @@ void PrivmsgCommand::run(User &user, std::vector<std::string> &args) {
 
 				target.send_raw(":" + user.nickname + " PRIVMSG " + target.nickname + " " + msg);
 			} catch (Server::UserNotFound &) {
-				user.send_srv_msg("301", ":User is offline or does not exist");
+				user.send_msg("301" + user.nickname + " " + args[1] + " :User is offline or does not exist");
 			}
 		}
 

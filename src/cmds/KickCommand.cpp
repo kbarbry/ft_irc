@@ -13,25 +13,24 @@ void KickCommand::run(User &user, std::vector<std::string> &args) {
 		return;
 	}
 	if (args.size() < 3) {
-		user.send_srv_msg("461", ":Arguments are invalid");
+		user.send_msg("461 " + user.nickname + " " + args[0] + " :Arguments are invalid");
 		return ;
 	}
 	try {
 		Channel &chan = Server::getInstance().getChannel(args[1]);
 
 		if (!chan.isMember(user.nickname)) {
-			user.send_srv_msg("442", ":You have to be part of the channel to kick someone from it");
+			user.send_msg("442 " + user.nickname + " " + args[1] + " :You are not in this channel");
 			return;
 		}
 		if (!chan.isOperator(user.nickname) && !user.is_operator) {
-			user.send_srv_msg("482", ":Operator priviledge needed");
+			user.send_msg("482 " + user.nickname + " " + chan.name + " :Operator privilege needed");
 			return;
 		}
 		if (!chan.isMember(args[2])) {
-			user.send_srv_msg("441", ":User not found");
+			user.send_msg("441 " + user.nickname + " " + args[2] + " " + args[1] + " :User not in this channel");
 			return;
 		}
-		chan.removeMember(args[2]);
 		std::string	reason = "";
 		if (args.size() > 4) {
 			if (args[4][0] == ':')
@@ -41,10 +40,11 @@ void KickCommand::run(User &user, std::vector<std::string> &args) {
 		}
 		else
 			reason = "No reason specified";
-		user.send_raw(args[2] + " have been kicked for " + reason + " by " + user.nickname);
+		chan.send_raw(":" + user.nickname + " KICK " + chan.name + " " + args[2] + " :" + reason);
+		chan.removeMember(args[2]);
 	}
 	catch(const Server::ChannelNotFound &) {
-		user.send_srv_msg("403", ":No such channel");
+		user.send_msg("403 " + user.nickname + " " + args[1] + " :Channel not found");
 		return ;
 	}
 }

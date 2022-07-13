@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iomanip>
 #include <exception>
 #include <stdint.h>
 #include <iterator>
@@ -23,7 +24,7 @@ public:
 	typedef	std::map<std::string, Channel>		channel_map;
 	typedef	std::map<std::string, ICommand *>	command_map;
 
-	static int		max_clients;
+	static const int	max_clients;
 
 	user_map			users;
 	operator_map 		operators;
@@ -42,7 +43,7 @@ public:
 
 	// Initializers
 	void	init_cmds(void);
-	void	configure(const uint16_t &port, const std::string &password);
+	void	configure(const std::string &port_str, const std::string &password);
 
 	// Runners
 	void	check_cmd(const std::string &txt, User &runner);

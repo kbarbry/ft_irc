@@ -5,11 +5,11 @@
 
 void UserCommand::run(User &user, std::vector<std::string> &args) {
 	if (!user.is_auth) {
-		user.send_srv_msg("461", ":You are not authenticated");
+		user.send_srv_msg("451", ":You haven't registered");
 		return ;
 	}
 	if (args.size() < 5 || args[2] != "0" || args[3] != "*") {
-		user.send_srv_msg("461", ":Arguments are invalid");
+		user.send_msg("461 " + user.nickname + " " + args[0] + " :Arguments are invalid");
 		return ;
 	}
 	if (user.is_online) {
@@ -17,16 +17,16 @@ void UserCommand::run(User &user, std::vector<std::string> &args) {
 		return ;
 	}
 	if (args.size() > 5 && args[4][0] != ':') {
-		user.send_srv_msg("461", ":Arguments are invalid");
+		user.send_msg("461 " + user.nickname + " " + args[0] + " :Arguments are invalid");
 		return ;
 	}
 	if (args[1].length() > 9) {
-		user.send_srv_msg("461", ":Username is too long (max is 9 characters)");
+		user.send_msg("461 " + user.nickname + " " + args[0] + " :Username is too long");
 		return ;
 	}
 	for (size_t i = 0; i < args[1].size() - 1; i++) {
 		if (!isalnum(args[1][i]) && args[1][i] != '_') {
-			user.send_srv_msg("461", ":Username can only contain alphanumeric and '_' characters.");
+			user.send_msg("461 " + user.nickname + " " + args[0] + " :Username can only contain alphanumeric and '_' characters.");
 			return ;
 		}
 	}
@@ -47,7 +47,7 @@ void UserCommand::run(User &user, std::vector<std::string> &args) {
 	if (user.nickname == "") {
 		for (Server::user_map::iterator it = serv.users.begin(); it != serv.users.end(); it++) {
 			if (it->second.nickname == args[1]) {
-				user.send_srv_msg("461", ":Nickname is already in use. Hint: Change nick with the NICK command");
+				user.send_msg("461 " + user.nickname + " " + args[0] + " :Nickname is already in use. Hint: Change nick with the NICK command");
 				return;
 			}
 		}
@@ -70,14 +70,14 @@ void UserCommand::run(User &user, std::vector<std::string> &args) {
 	if (!chan.isMember(user.nickname))
 		chan.members.push_back(user.username);
 
-	std::string	lst_str = ":";
+	std::string	lst_str = "";
 	Channel::id_vector lst = chan.members;
 	for (std::vector<std::string>::iterator ite = lst.begin(); ite != lst.end(); ++ite) {
-		lst_str += *ite;
+		lst_str += Server::getInstance().getUserByUsername(*ite).nickname;
 		if (ite != lst.end() - 1)
 			lst_str += " ";
 	}
-	user.send_raw(":" + user.nickname + " JOIN " + chan.name);
+	chan.send_raw(":" + user.nickname + " JOIN " + chan.name);
 	chan.send_msg_srv("353 " + user.nickname + " = " + chan.name + " :" + lst_str);
 	chan.send_msg_srv("366 " + user.nickname + " " + chan.name + " :End of /NAMES list.");
 }

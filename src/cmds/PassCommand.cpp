@@ -7,11 +7,11 @@
 
 void PassCommand::run(User &user, std::vector<std::string> &args) {
 	if (user.is_auth) {
-		user.send_srv_msg("462", ":You are already authenticated");
+		user.send_srv_msg("462", ":You may not reregister");
 		return;
 	}
 	if (args.size() != 2) {
-		user.send_srv_msg("461", ":Invalid argument count");
+		user.send_msg("461 " + user.nickname + " " + args[0] + " :Arguments are invalid");
 		return;
 	}
 	if (Server::getInstance().password != args[1]) {

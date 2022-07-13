@@ -8,11 +8,11 @@
 
 void OperCommand::run(User &user, std::vector<std::string> &args) {
 	if (!user.is_online) {
-		user.send_srv_msg("451", ":You are not authenticated");
+		user.send_srv_msg("451", ":You haven't registered");
 		return;
 	}
 	if (args.size() != 3) {
-		user.send_srv_msg("461", ":Arguments are invalid");
+		user.send_msg("461 " + user.nickname + " " + args[0] + " :Arguments are invalid");
 		return ;
 	}
 	try {

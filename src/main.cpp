@@ -8,8 +8,8 @@ int main(int ac, char **av)
 		std::cerr << "Use: ./ircserv <port> <password>" << std::endl;
 		return 1;
 	}
-	uint16_t	port = std::atoi(std::string(av[1]).c_str());
-	std::string	password = std::string(av[2]).c_str();
+	std::string	port = av[1];
+	std::string	password = av[2];
 
 	Server &server = Server::getInstance();
 	try {

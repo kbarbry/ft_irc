@@ -11,11 +11,11 @@
 
 void TopicCommand::run(User &user, std::vector<std::string> &args) {
 	if (!user.is_online) {
-		user.send_srv_msg("451", ":You are not authenticated");
+		user.send_srv_msg("451", ":You haven't registered");
 		return;
 	}
 	if (args.size() == 1) {
-		user.send_srv_msg("461", ":Arguments are invalid");
+		user.send_msg("461 " + user.nickname + " " + args[0] + " :Arguments are invalid");
 		return;
 	}
 	if (args.size() == 2) {
@@ -23,16 +23,16 @@ void TopicCommand::run(User &user, std::vector<std::string> &args) {
 			Channel &chan = Server::getInstance().getChannel(args[1]);
 
 			if (!chan.isMember(user.nickname)) {
-				user.send_srv_msg("442", ":You're not in this channel");
+				user.send_msg("442 " + user.nickname + " " + chan.name + " :You're not in this channel");
 				return;
 			}
 			if (chan.topic == "")
-				user.send_srv_msg("331", ":No topic set");
+				user.send_msg("331 " + user.nickname + " " + chan.name + " :No topic is set");
 			else
-				user.send_srv_msg("332", user.nickname + " " + chan.name + " :" + chan.topic);
+				user.send_msg("332 " + user.nickname + " " + chan.name + " :" + chan.topic);
 		}
 		catch (Server::ChannelNotFound &) {
-			user.send_srv_msg("403", ":Channel not found");
+			user.send_msg("403 " + user.nickname + " " + args[1] + " :Channel not found");
 			return;
 		}
 	}
@@ -47,19 +47,20 @@ void TopicCommand::run(User &user, std::vector<std::string> &args) {
 					topic += " ";
 			}
 			if (!chan.isMember(user.nickname)) {
-				user.send_srv_msg("442", ":You're not in this channel");
+				user.send_msg("442 " + user.nickname + " " + chan.name + " :You're not in this channel");
 				return;
 			}
 			if (!chan.isOperator(user.nickname) && !user.is_operator) {
-				user.send_srv_msg("482", ":Operator privilege needed");
+				user.send_msg("482 " + user.nickname + " " + chan.name + " :Operator privilege needed");
 				return;
 			}
 			if (args[2][0] == ':')
 				topic.replace(0, 1, "");
 			chan.topic =  topic;
+			chan.send_msg_srv("332 " + user.nickname + " " + chan.name + " :" + topic);
 		}
 		catch (Server::ChannelNotFound &) {
-			user.send_srv_msg("403", ":Channel not found");
+			user.send_msg("403 " + user.nickname + " " + args[1] + " :Channel not found");
 			return;
 		}
 	}
