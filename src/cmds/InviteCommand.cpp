@@ -14,37 +14,39 @@ void InviteCommand::run(User &user, std::vector<std::string> &args) {
 		return;
 	}
 	if (args.size() < 3) {
-		user.send_srv_msg("461", ":Arguments are invalid");
+		user.send_msg("461 " + user.nickname + " " + args[0] + " :Arguments are invalid");
 		return ;
 	}
 	try {
 		Channel &chan = Server::getInstance().getChannel(args[2]);
 
 		if (!chan.isMember(user.nickname)) {
-			user.send_srv_msg("442", ":You have to be part of the channel to invite someone on it");
-			return;
+			user.send_msg("442 " + user.nickname + " " + args[2] + " :You are not in this channel");
 		}
 		if (!chan.isOperator(user.nickname) && !user.is_operator) {
-			user.send_srv_msg("482", ":Operator priviledge needed");
+			user.send_msg("482 " + user.nickname + " " + chan.name + " :Operator privilege needed");
 			return;
 		}
 		if (!chan.is_private) {
-			user.send_srv_msg("461", ":Channel is not private, why would you invite people?");
+			user.send_msg("461 " + args[0] + " :Channel is not private, why would you invite people?");
 			return;
 		}
 		if (chan.isMember(args[1])) {
-			user.send_srv_msg("443", ":User already in channel");
+			user.send_msg("443 " + user.nickname + " " + args[1] + " " + args[2] + " :User already in channel");
 			return;
 		}
 		try {
-			chan.invited.push_back(Server::getInstance().getUserByNickname(args[1]).username);
-			user.send_srv_msg("341", ":" + user.nickname + " INVITE " + args[1] + chan.name);
+			User &target = Server::getInstance().getUserByNickname(args[1]);
+
+			chan.invited.push_back(target.username);
+			user.send_msg("341 " + user.nickname + " " + args[1] + " " + args[2]);
+			target.send_raw(":" + user.nickname + " INVITE " + args[1] + " " + args[2]);
 		} catch (Server::UserNotFound &) {
-			user.send_srv_msg("443", ":User does not exist");
+			user.send_msg("401 " + user.nickname + " " + args[1] + " :User not found");
 		}
 	}
 	catch(const Server::ChannelNotFound &) {
-		user.send_srv_msg("403", ":No such channel");
+		user.send_msg("403 " + user.nickname + " " + args[1] + " :Channel not found");
 		return ;
 	}
 }

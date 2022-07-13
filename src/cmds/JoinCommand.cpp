@@ -19,7 +19,7 @@ void JoinCommand::run(User &user, std::vector<std::string> &args) {
 		return;
 	}
 	if (args.size() < 2) {
-		user.send_srv_msg("461", ":Channel name is missing");
+		user.send_msg("461 " + user.nickname + " " + args[0] + " :Arguments are invalid");
 		return ;
 	}
 	std::vector<std::string> v;
@@ -34,7 +34,7 @@ void JoinCommand::run(User &user, std::vector<std::string> &args) {
 			Channel &chan = Server::getInstance().getChannel(*it);
 
 			if (chan.is_private && !chan.isInvited(user.nickname)) {
-				user.send_srv_msg("473", ":You are not invited to this channel");
+				user.send_msg("473 " + user.nickname + " " + args[1] + " :You are not invited to this channel");
 				return;
 			}
 			if (!chan.is_private || (chan.is_private && chan.isInvited(user.nickname))) {
@@ -49,17 +49,17 @@ void JoinCommand::run(User &user, std::vector<std::string> &args) {
 					if (ite != lst.end() - 1)
 						lst_str += " ";
 				}
-				user.send_raw(":" + user.nickname + " JOIN " + chan.name);
+				chan.send_raw(":" + user.nickname + " JOIN " + chan.name);
 				chan.send_msg_srv("353 " + user.nickname + " = " + chan.name + " :" + lst_str);
 				chan.send_msg_srv("366 " + user.nickname + " " + chan.name + " :End of /NAMES list.");
 			}
 		} catch (Server::ChannelNotFound &) {
 			if (it->size() != 0 && (*it)[0] != '#') {
-				user.send_srv_msg("403", ":Channel name must start with a '#'");
+				user.send_msg("403 " + user.nickname + " " + args[1] + " :Channel name must start with a '#'");
 				return;
 			}
 			if (std::count(it->begin(), it->end(), '#') != 1) {
-				user.send_srv_msg("403", ":Channel name cannot have more than one '#'");
+				user.send_msg("403 " + user.nickname + " " + args[1] + " :Channel name cannot have more than one '#'");
 				return;
 			}
 			try {
@@ -73,7 +73,7 @@ void JoinCommand::run(User &user, std::vector<std::string> &args) {
 					if (ite != lst.end() - 1)
 						lst_str += " ";
 				}
-				user.send_raw(":" + user.nickname + " JOIN " + chan.name);
+				chan.send_raw(":" + user.nickname + " JOIN " + chan.name);
 				chan.send_msg_srv("353 " + user.nickname + " = " + chan.name + " :" + lst_str);
 				chan.send_msg_srv("366 " + user.nickname + " " + chan.name + " :End of /NAMES list.");
 

@@ -7,8 +7,12 @@
 
 void PartCommand::run(User &user, std::vector<std::string> &args) {
 	if (!user.is_online) {
-		user.send_srv_msg("451", ":You are not authenticated");
+		user.send_srv_msg("451", ":You haven't registered");
 		return;
+	}
+	if (args.size() < 2) {
+		user.send_msg("461 " + user.nickname + " " + args[0] + " :Arguments are invalid");
+		return ;
 	}
 	std::vector<std::string> v;
 	std::istringstream ss(args[1]);
@@ -30,7 +34,7 @@ void PartCommand::run(User &user, std::vector<std::string> &args) {
 			Channel &chan = Server::getInstance().getChannel(*it);
 
 			if (!chan.isMember(user.nickname)) {
-				user.send_srv_msg("442", ":You have to be part of the channel to leave it");
+				user.send_msg("442 " + user.nickname + " " + args[1] + " :You are not in this channel");
 				return;
 			}
 			Channel::id_vector mbrs = chan.members;
@@ -44,7 +48,7 @@ void PartCommand::run(User &user, std::vector<std::string> &args) {
 			}
 			chan.removeMember(user.nickname);
 		} catch (Server::ChannelNotFound &) {
-			user.send_srv_msg("403", ":No such channel");
+			user.send_msg("403 " + user.nickname + " " + *it + " :Channel not found");
 			return ;
 		}
 	}
