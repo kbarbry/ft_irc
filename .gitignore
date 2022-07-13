@@ -1,6 +1,11 @@
+# Fichiers en .
 .DS_Store
 .idea
 .vscode
+
+# Wildcard
 *.o
+
+# Executables
 ircserv
 ircbot
