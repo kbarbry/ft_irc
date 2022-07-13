@@ -1,5 +1,4 @@
 #include "Commands.hpp"
-#include "Server.hpp"
 
 void NoticeCommand::run(User &user, std::vector<std::string> &args) {
 	if (args.size() == 1 || args.size() == 2 || !user.is_online) {

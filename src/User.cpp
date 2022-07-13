@@ -1,7 +1,4 @@
-#include <sys/socket.h>
 #include "User.hpp"
-#include <iomanip>
-#include "Server.hpp"
 
 User::User(int socket_fd): command(""), response(""), nickname(""), username(), real_name(""), socket_fd(socket_fd), should_disconnect(false), is_auth(false), is_online(false), is_operator(false), pong_received(true), last_ping(std::time(NULL)) {}
 
@@ -41,7 +38,7 @@ void	User::broadcast_channel(const std::string &msg) {
 
 void User::send_msg(const std::string &msg) {
 	std::string real_message = ":localhost " + msg;
-	std::cout << "\033[0;32m-->\033[0;0m " << std::setfill(' ') << std::setw(9) << nickname << " \033[0;33m|\033[0;0m " << real_message << "" << std::endl;
+	std::cout << "\033[0;32m-->\033[0;0m " << std::setfill(' ') << std::setw(9) << username << " \033[0;33m|\033[0;0m " << real_message << "" << std::endl;
 
 	real_message += "\r\n";
 	response += real_message;
@@ -49,7 +46,7 @@ void User::send_msg(const std::string &msg) {
 
 void User::send_srv_msg(const std::string &code, const std::string &msg) {
 	std::string real_message = ":localhost " + code + " " + nickname + " " + msg;
-	std::cout << "\033[0;32m-->\033[0;0m " << std::setfill(' ') << std::setw(9) << nickname << " \033[0;33m|\033[0;0m " << real_message << std::endl;
+	std::cout << "\033[0;32m-->\033[0;0m " << std::setfill(' ') << std::setw(9) << username << " \033[0;33m|\033[0;0m " << real_message << std::endl;
 
 	real_message += "\r\n";
 	response += real_message;
@@ -57,7 +54,7 @@ void User::send_srv_msg(const std::string &code, const std::string &msg) {
 
 void User::send_raw(const std::string &msg) {
 	std::string real_message = msg;
-	std::cout << "\033[0;32m-->\033[0;0m " << std::setfill(' ') << std::setw(9) << nickname << " \033[0;33m|\033[0;0m " << real_message << std::endl;
+	std::cout << "\033[0;32m-->\033[0;0m " << std::setfill(' ') << std::setw(9) << username << " \033[0;33m|\033[0;0m " << real_message << std::endl;
 
 	real_message += "\r\n";
 	response += real_message;

@@ -1,5 +1,4 @@
 #include "Channel.hpp"
-#include "Server.hpp"
 
 // ERR_NEEDMOREPARAMS	461
 // ERR_NOSUCHCHANNEL	403

@@ -1,5 +1,3 @@
-#include <iostream>
-#include <stdint.h>
 #include "Server.hpp"
 
 int main(int ac, char **av)

@@ -1,10 +1,11 @@
 #pragma once
 
+#include <vector>
+#include <sstream>
+
 #include "ICommand.hpp"
 #include "SocketManager.hpp"
 #include "Server.hpp"
-#include <vector>
-#include <sstream>
 
 // Auth Commands
 class PassCommand: public ICommand {

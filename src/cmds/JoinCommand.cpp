@@ -1,5 +1,4 @@
 #include "Commands.hpp"
-#include "Server.hpp"
 
 // ERR_NOSUCHCHANNEL	403
 // ERR_TOOMANYCHANNELS	405

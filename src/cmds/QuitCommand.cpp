@@ -1,5 +1,4 @@
 #include "Commands.hpp"
-#include "Server.hpp"
 
 void QuitCommand::run(User &user, std::vector<std::string> &args) {
 	std::string reason = "";

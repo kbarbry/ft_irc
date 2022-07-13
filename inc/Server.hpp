@@ -5,6 +5,10 @@
 #include <stdint.h>
 #include <iterator>
 #include <map>
+#include <cstddef>
+#include <ctime>
+#include <iostream>
+
 #include "Channel.hpp"
 #include "Commands.hpp"
 #include "SocketManager.hpp"

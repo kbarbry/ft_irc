@@ -4,6 +4,8 @@
 #include <string>
 #include <algorithm>
 
+#include "Server.hpp"
+
 class Channel
 {
 public:

@@ -1,5 +1,4 @@
 #include "Commands.hpp"
-#include "Server.hpp"
 
 // PRIVMSG #nul:localhost :message
 // PRIVMSG remi :message

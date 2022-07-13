@@ -1,5 +1,4 @@
 #include "Commands.hpp"
-#include "Server.hpp"
 
 std::string ModeCommand::modes = "io";
 

@@ -1,5 +1,4 @@
 #include "Channel.hpp"
-#include "Server.hpp"
 
 Channel::Channel(const std::string &name, const std::string &owner): name(name), owner(owner), topic("No Topic") {
 	members.push_back(owner);

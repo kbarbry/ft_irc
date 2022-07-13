@@ -1,5 +1,4 @@
-#include "../../inc/Commands.hpp"
-#include "../../inc/Server.hpp"
+#include "Commands.hpp"
 
 // ERR_NEEDMOREPARAMS	461
 // ERR_NOSUCHCHANNEL	403

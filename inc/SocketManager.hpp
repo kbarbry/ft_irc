@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Server.hpp"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -13,6 +12,8 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
+
+#include "Server.hpp"
 
 class SocketManager
 {

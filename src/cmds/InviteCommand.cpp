@@ -1,5 +1,4 @@
 #include "Commands.hpp"
-#include "Server.hpp"
 
 // RPL_INVITING			341
 // ERR_NEEDMOREPARAMS	461
