@@ -32,7 +32,7 @@ print_header:
 	echo "$(BBLU)\033[35G ██         ██              ██ ██   ██ ██      "
 	echo "$(BBLU)\033[35G ██         ██    ███████   ██ ██   ██  ██████ "
 	echo "$(BBLU)\033[5G"
-	echo "$(BBLU)\033[5G==================================> By kbarbry ft tjolivea ft mmosca <=================================="
+	echo "$(BBLU)\033[5G==================================> By kbarbry && tjolivea && mmosca <=================================="
 .PHONY: print_header
 
 ./obj/%.o: ./src/%.cpp $(HEADER)
